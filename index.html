@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR SMART</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#17243a}
+header{background:#102b50;color:white;padding:18px;display:flex;justify-content:space-between;align-items:center}
+header h2{margin:0}
+button{border:0;border-radius:8px;padding:11px 15px;cursor:pointer;background:#1765bd;color:white}
+.layout{display:flex;min-height:calc(100vh - 65px)}
+nav{width:220px;background:#fff;padding:15px}
+nav button{display:block;width:100%;margin:7px 0;text-align:right;background:#edf3fa;color:#17395e}
+nav button:hover{background:#d8e8fb}
+main{padding:20px;flex:1;min-width:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.card{background:white;padding:18px;border-radius:12px;box-shadow:0 2px 8px #0000000a}
+.number{font-size:27px;font-weight:bold;color:#1765bd;margin-top:10px}
+.panel{background:white;padding:18px;border-radius:12px;margin-top:18px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:420px}
+th,td{padding:12px;border-bottom:1px solid #e8edf3;text-align:right}
+th{color:#52647b}
+.page{display:none}
+.page.active{display:block}
+input,select{padding:11px;border:1px solid #ccd5e0;border-radius:8px;margin:5px;max-width:100%}
+.small{color:#68788c;font-size:13px}
+@media(max-width:650px){
+ .layout{display:block}
+ nav{width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:5px}
+ nav button{margin:0;text-align:center}
+ main{padding:12px}
+}
+</style>
+</head>
+<body>
+<header>
+ <h2>HR SMART</h2>
+ <button onclick="toggleLang()" id="langBtn">Français</button>
+</header>
+
+<div class="layout">
+<nav>
+ <button onclick="showPage('dashboard')" data-ar="لوحة التحكم" data-fr="Tableau de bord">لوحة التحكم</button>
+ <button onclick="showPage('employees')" data-ar="الموظفون" data-fr="Employés">الموظفون</button>
+ <button onclick="showPage('attendance')" data-ar="الحضور والانصراف" data-fr="Présence">الحضور والانصراف</button>
+ <button onclick="showPage('leaves')" data-ar="الإجازات" data-fr="Congés">الإجازات</button>
+ <button onclick="showPage('payroll')" data-ar="الرواتب" data-fr="Paie">الرواتب</button>
+ <button onclick="showPage('settings')" data-ar="الإعدادات" data-fr="Paramètres">الإعدادات</button>
+</nav>
+
+<main>
+<section id="dashboard" class="page active">
+ <h2 data-ar="لوحة التحكم" data-fr="Tableau de bord">لوحة التحكم</h2>
+ <p class="small" data-ar="مرحباً بك في نظام إدارة الموارد البشرية" data-fr="Bienvenue dans votre système RH">مرحباً بك في نظام إدارة الموارد البشرية</p>
+ <div class="cards">
+  <div class="card"><span data-ar="إجمالي الموظفين" data-fr="Total employés">إجمالي الموظفين</span><div class="number">0</div></div>
+  <div class="card"><span data-ar="الحاضرون اليوم" data-fr="Présents aujourd'hui">الحاضرون اليوم</span><div class="number">0</div></div>
+  <div class="card"><span data-ar="الإجازات" data-fr="Congés">الإجازات</span><div class="number">0</div></div>
+  <div class="card"><span data-ar="الرواتب" data-fr="Salaires">الرواتب</span><div class="number">DZD</div></div>
+ </div>
+ <div class="panel">
+  <h3 data-ar="النظام جاهز للتهيئة" data-fr="Système prêt à configurer">النظام جاهز للتهيئة</h3>
+  <p data-ar="هذه واجهة أولية. سنربطها بقاعدة بيانات Supabase ونضيف بياناتك الحقيقية بعد إعداد الاتصال والصلاحيات." data-fr="Cette interface est une première version. Nous la connecterons à Supabase après la configuration de l'accès et des autorisations.">هذه واجهة أولية. سنربطها بقاعدة بيانات Supabase ونضيف بياناتك الحقيقية بعد إعداد الاتصال والصلاحيات.</p>
+ </div>
+</section>
+
+<section id="employees" class="page">
+ <h2 data-ar="إدارة الموظفين" data-fr="Gestion des employés">إدارة الموظفين</h2>
+ <div class="panel">
+  <input id="empName" placeholder="اسم الموظف">
+  <input id="empCode" placeholder="رقم الموظف">
+  <button onclick="addEmployee()" data-ar="إضافة موظف تجريبي" data-fr="Ajouter un employé test">إضافة موظف تجريبي</button>
+  <table><thead><tr><th data-ar="الاسم" data-fr="Nom">الاسم</th><th data-ar="الرقم" data-fr="Code">الرقم</th></tr></thead><tbody id="empRows"></tbody></table>
+  <p class="small" data-ar="البيانات هنا تجريبية داخل هذه الصفحة فقط، وليست محفوظة في قاعدة البيانات بعد." data-fr="Ces données sont temporaires et ne sont pas encore enregistrées dans la base de données.">البيانات هنا تجريبية داخل هذه الصفحة فقط، وليست محفوظة في قاعدة البيانات بعد.</p>
+ </div>
+</section>
+
+<section id="attendance" class="page">
+ <h2 data-ar="الحضور والانصراف" data-fr="Présence">الحضور والانصراف</h2>
+ <div class="panel" data-ar="سنضيف تسجيل الحضور وساعات العمل بعد ربط قاعدة البيانات." data-fr="Nous ajouterons le pointage et les heures de travail après la connexion à la base de données.">سنضيف تسجيل الحضور وساعات العمل بعد ربط قاعدة البيانات.</div>
+</section>
+
+<section id="leaves" class="page">
+ <h2 data-ar="إدارة الإجازات" data-fr="Gestion des congés">إدارة الإجازات</h2>
+ <div class="panel" data-ar="سنضيف طلبات الإجازة والموافقة عليها." data-fr="Nous ajouterons les demandes de congé et leur approbation.">سنضيف طلبات الإجازة والموافقة عليها.</div>
+</section>
+
+<section id="payroll" class="page">
+ <h2 data-ar="إدارة الرواتب" data-fr="Gestion de la paie">إدارة الرواتب</h2>
+ <div class="panel" data-ar="العملة المعتمدة: الدينار الجزائري DZD. سنربط حساب الرواتب بقاعدة البيانات بعد التحقق من الصلاحيات." data-fr="Devise : Dinar algérien DZD. Nous connecterons la paie après vérification des autorisations.">العملة المعتمدة: الدينار الجزائري DZD. سنربط حساب الرواتب بقاعدة البيانات بعد التحقق من الصلاحيات.</div>
+</section>
+
+<section id="settings" class="page">
+ <h2 data-ar="الإعدادات" data-fr="Paramètres">الإعدادات</h2>
+ <div class="panel">
+  <p>HR SMART</p>
+  <p>Arabic / Français</p>
+  <p>DZD - Algerian Dinar</p>
+ </div>
+</section>
+</main>
+</div>
+
+<script>
+let lang='ar';
+function showPage(id){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+}
+function toggleLang(){
+ lang=lang==='ar'?'fr':'ar';
+ document.documentElement.lang=lang;
+ document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+ document.querySelectorAll('[data-ar]').forEach(el=>{
+  el.textContent=el.dataset[lang];
+ });
+ document.getElementById('langBtn').textContent=lang==='ar'?'Français':'العربية';
+}
+function addEmployee(){
+ const name=document.getElementById('empName').value.trim();
+ const code=document.getElementById('empCode').value.trim();
+ if(!name||!code){alert(lang==='ar'?'أدخل الاسم والرقم':'Saisissez le nom et le code');return;}
+ const row=document.createElement('tr');
+ const a=document.createElement('td');a.textContent=name;
+ const b=document.createElement('td');b.textContent=code;
+ row.append(a,b);
+ document.getElementById('empRows').appendChild(row);
+ document.getElementById('empName').value='';
+ document.getElementById('empCode').value='';
+}
+</script>
+</body>
+</html>
